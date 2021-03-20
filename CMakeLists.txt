@@ -1,8 +1,3 @@
-cmake_minimum_required(VERSION 3.11)
-
-project(abcg)
-
-include(cmake/Common.cmake)
-
-add_subdirectory(abcg)
-add_subdirectory(examples)
+project(touhouzinho)
+add_executable(${PROJECT_NAME} main.cpp openglwindow.cpp player.cpp starlayers.cpp playerbullet.cpp enemy.cpp)
+enable_abcg(${PROJECT_NAME})
