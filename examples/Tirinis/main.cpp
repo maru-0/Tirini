@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
                                .height = 600,
                                .showFPS = false,
                                .showFullscreenButton = false,
-                               .title = "Touhouzinho"});
+                               .title = "Tírinis"});
     app.run(window);
   } catch (abcg::Exception &exception) {
     fmt::print(stderr, "{}\n", exception.what());
