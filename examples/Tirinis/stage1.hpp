@@ -41,6 +41,8 @@ class Stage1{
     GLuint m_bulletsProgram;
 
     bool stageDone{false};
+    float speedfactor{1.25f};
+    int iterations=1;
 
     void wave01(std::vector<Enemy> &enemies);
     void wave02(std::vector<Enemy> &enemies);

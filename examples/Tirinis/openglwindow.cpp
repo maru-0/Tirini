@@ -4,6 +4,8 @@
 #include "abcg.hpp"
 #include <iostream>
 #include <list>
+#include <string>
+
 void OpenGLWindow::handleEvent(SDL_Event &event) {
   // Keyboard events
   if (event.type == SDL_KEYDOWN) {
@@ -71,12 +73,13 @@ void OpenGLWindow::restart() {
   stage = Stage1();
   stage.m_bulletsProgram = m_bulletsProgram;
   stage.m_objectsProgram = m_objectsProgram;
-
+  defeated = 0;
+  m_gameData.m_state = State::Playing;
   m_gameData.m_state = State::Playing;
   m_restartWaitTimer.restart();
   m_starLayers.initializeGL(m_starsProgram, 25);
   m_player.initializeGL(m_objectsProgram);
-
+  m_player.m_lives = 3;
   m_enemies.clear();
   m_player.m_bullets.clear();
   m_eBullets.clear();
@@ -187,7 +190,7 @@ void OpenGLWindow::paintUI() {
 
   {
     auto size{ImVec2(300, 85)};
-    auto position{ImVec2((m_viewportWidth - size.x) / 2.0f,
+    auto position{ImVec2((m_viewportWidth - size.x)+50.0f,
                          (m_viewportHeight - size.y) / 2.0f)};
     ImGui::SetNextWindowPos(position);
     ImGui::SetNextWindowSize(size);
@@ -195,7 +198,8 @@ void OpenGLWindow::paintUI() {
                            ImGuiWindowFlags_NoTitleBar |
                            ImGuiWindowFlags_NoInputs};
     ImGui::Begin(" ", nullptr, flags);
-    
+    ImGui::Text("Extra lives: %d\nDefeated enemies: %d", m_player.m_lives, defeated);
+  
     ImGui::End();
   }
 }
@@ -220,13 +224,20 @@ void OpenGLWindow::checkCollisions(){
   for(auto i = m_enemies.begin(); i != m_enemies.end(); ++i){
     if(!m_player.m_invincibility && (glm::distance(m_player.m_translation, i->m_translation) < (m_player.m_scale/4) + i->m_scale*0.66f)){
       m_player.damage();
-      std::cout << m_player.m_lives << std::endl;
+
+      if(m_player.m_lives < 0){
+        m_player.m_lives = 0;
+        m_gameData.m_state = State::Defeated;
+      }
     }
     for(auto j = m_player.m_bullets.begin(); j != m_player.m_bullets.end(); ++j){
       if(glm::distance(j->m_translation, i->m_translation) < (j->m_scale/2) + i->m_scale){
         i->life--;
-        std::cout << i->life << std::endl;
-        if(i->life == 0) i->m_destroyed = true;
+        // std::cout << i->life << std::endl;
+        if(i->life == 0){
+          defeated++;
+          i->m_destroyed = true;
+        }
         j->m_hit = true;
       }
     }
@@ -235,7 +246,10 @@ void OpenGLWindow::checkCollisions(){
     if(!m_player.m_invincibility && (glm::distance(m_player.m_translation, i->m_translation) < (m_player.m_scale/4) + i->m_scale*0.7f)){
       m_player.damage();
       i->m_hit = true;
-      std::cout << "vidas: "<<m_player.m_lives << std::endl;
+      if(m_player.m_lives < 0){
+        m_player.m_lives = 0;
+        m_gameData.m_state = State::Defeated;
+      }
     }
   }
 }

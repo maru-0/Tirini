@@ -12,6 +12,7 @@ void Stage1::update(std::vector<Enemy> &enemies){
             currentState = Wave01;
             waveDone = false;
             waveTimer.restart();
+            iterations++;
             break;
         }
         if(waveDone) break;
@@ -30,6 +31,7 @@ void Stage1::wave01(std::vector<Enemy> &enemies){
     std::vector<shootPattern> shoots{};
     std::vector<uint16_t> indexes{};
 
+    // shoots.back().bullet.m_speed *=iterations*speedfactor;
     indexes.push_back(0);
 
     shoots.push_back(shootPattern{});

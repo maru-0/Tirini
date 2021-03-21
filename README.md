@@ -2,6 +2,10 @@
 
 Simple bullet hell shooter game, made as a project for the course [MCTA008-17 Computer Graphics](http://professor.ufabc.edu.br/~harlen.batagelo/cg/) at [UFABC](https://www.ufabc.edu.br/).
 
+The game currently just repeats a loop with enemies in specific positions with especific bullet types, but the framework for implementing stages with waves of enemies with different bullet patterns is already implemented, but we ran out of time.
+
+Try deafeating the most enemies before running out of lives!
+
 ## Controls
 - Movement: Arrow keys.
 - Shoot: Z key.

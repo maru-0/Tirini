@@ -20,7 +20,7 @@ class Player {
 
   std::vector<PlayerBullet> m_bullets{};
 
-  uint16_t m_lives{5};
+  int16_t m_lives{3};
 
   glm::vec2 m_translation{glm::vec2(0)};
   float m_scale{0.05f};

@@ -35,7 +35,7 @@ class OpenGLWindow : public abcg::OpenGLWindow {
 
   int m_viewportWidth{};
   int m_viewportHeight{};
-
+  uint16_t defeated = 0;
   GameData m_gameData;
 
   Player m_player;

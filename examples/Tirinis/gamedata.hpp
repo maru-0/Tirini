@@ -4,7 +4,7 @@
 #include <bitset>
 
 enum class Input { Right, Left, Down, Up, Shoot, Focus, Restart };
-enum class State { Playing};
+enum class State { Playing, Defeated};
 
 struct GameData {
   State m_state{State::Playing};

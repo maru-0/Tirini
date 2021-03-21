@@ -10,7 +10,6 @@ void Player::initializeGL(GLuint program) {
 
   m_program = program;
   m_translation = glm::vec2(spawn);
-  m_lives = 5;
   //clear na lista de bullets
   m_scaleLoc = glGetUniformLocation(m_program, "scale");
   m_colorLoc = glGetUniformLocation(m_program, "color");
