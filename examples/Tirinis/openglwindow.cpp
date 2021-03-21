@@ -51,6 +51,9 @@ void OpenGLWindow::initializeGL() {
   m_starsProgram = createProgramFromFile(getAssetsPath() + "stars.vert",
                                            getAssetsPath() + "stars.frag");
 
+  m_bulletsProgram = createProgramFromFile(getAssetsPath() + "objects.vert",
+                                           getAssetsPath() + "bullets.frag");
+
   glClearColor(0, 0, 0, 1);
 
 #if !defined(__EMSCRIPTEN__)
@@ -65,6 +68,10 @@ void OpenGLWindow::initializeGL() {
 }
 
 void OpenGLWindow::restart() {
+  stage = Stage1();
+  stage.m_bulletsProgram = m_bulletsProgram;
+  stage.m_objectsProgram = m_objectsProgram;
+
   m_gameData.m_state = State::Playing;
   m_restartWaitTimer.restart();
   m_starLayers.initializeGL(m_starsProgram, 25);
@@ -72,11 +79,28 @@ void OpenGLWindow::restart() {
 
   m_enemies.clear();
   m_player.m_bullets.clear();
+  m_eBullets.clear();
 
-  m_enemies.push_back(Enemy{});
+  // m_eBullets.push_back(EnemyBullet{});
+  // m_eBullets.back().initializeGL(m_bulletsProgram);
+  
+  
+
+  // m_enemies.push_back(Enemy{});
+
+  std::vector<shootPattern> shoots{};
+  std::vector<uint16_t> indexes{};
+
+  indexes.push_back(0);
+
+  shoots.push_back(shootPattern{});
+  
+
   for(auto &enemy : m_enemies){
-    enemy.setBehavior(m_objectsProgram, 100, std::vector<glm::vec2>{glm::vec2{-1.0f, 1.0f },glm::vec2{-0.6f, -0.5f},glm::vec2{0.0f, 0.5f},glm::vec2{-1.0f, 1.0f }},
-                      std::vector<float>{0.5f,0.8f,0.8f}, std::vector<float>{1.5f,1.5f,1.5f});
+    // enemy.setBehavior(m_objectsProgram, 100, std::vector<glm::vec2>{glm::vec2{-1.0f, 1.0f },glm::vec2{-0.6f, -0.5f},glm::vec2{0.0f, 0.5f},glm::vec2{-1.0f, 1.0f }},
+    //                   std::vector<float>{0.5f,10.8f,0.8f}, std::vector<float>{1.5f,1.5f,1.5f});
+    enemy.createEnemy(m_objectsProgram, 100, std::vector<glm::vec2>{glm::vec2{-1.0f, 1.0f },glm::vec2{-0.6f, -0.5f},glm::vec2{0.0f, 0.5f},glm::vec2{-1.0f, 1.0f }},
+                      std::vector<float>{0.5f,5.0f,0.8f}, std::vector<float>{1.5f,1.5f,1.5f},m_bulletsProgram , shoots, indexes);
   }
 }
 
@@ -87,17 +111,28 @@ void OpenGLWindow::update() {
     restart();
     return;
   }
+
+  stage.update(m_enemies);
+
   for(auto &enemy : m_enemies){
-    enemy.update(m_gameData, deltaTime);
+    enemy.update(m_player.m_translation, m_gameData, deltaTime, m_eBullets);
   }
 
-  m_player.update(m_gameData, deltaTime);
+
+  playerPosition = m_player.m_translation;
 
   for(auto &bullet : m_player.m_bullets){
     bullet.update(m_gameData, deltaTime);
   }
+
+  for(auto &ebullet : m_eBullets){
+    ebullet.update(m_gameData, deltaTime);
+  }
   
   m_starLayers.update(m_player, deltaTime);
+
+  m_player.update(m_gameData, deltaTime);
+
 
   checkCollisions();
 
@@ -113,6 +148,12 @@ void OpenGLWindow::update() {
       i--;
     }
   }
+  for(auto i = m_eBullets.begin(); i != m_eBullets.end(); ++i){
+    if(i->m_hit){
+      m_eBullets.erase(i);
+      i--;
+    }
+  }
 
 }
 
@@ -123,13 +164,22 @@ void OpenGLWindow::paintGL() {
   glViewport(0, 0, m_viewportWidth, m_viewportHeight);
 
   m_starLayers.paintGL();
+
+  m_player.paintGL(m_gameData);
   for(auto &enemy : m_enemies){
     enemy.paintGL(m_gameData);
   }
-  m_player.paintGL(m_gameData);
+
+  
+
   for(auto &bullet : m_player.m_bullets){
     bullet.paintGL(m_gameData);
   }
+
+  for(auto &ebullet : m_eBullets){
+    
+    ebullet.paintGL(m_gameData);
+  }  
 }
 
 void OpenGLWindow::paintUI() {
@@ -165,11 +215,10 @@ void OpenGLWindow::terminateGL() {
   m_starLayers.terminateGL();
 }
 
-#include<iostream>
 void OpenGLWindow::checkCollisions(){
   
   for(auto i = m_enemies.begin(); i != m_enemies.end(); ++i){
-    if(!m_player.m_invincibility && (glm::distance(m_player.m_translation, i->m_translation) < (m_player.m_scale/4) + i->m_scale)){
+    if(!m_player.m_invincibility && (glm::distance(m_player.m_translation, i->m_translation) < (m_player.m_scale/4) + i->m_scale*0.66f)){
       m_player.damage();
       std::cout << m_player.m_lives << std::endl;
     }
@@ -180,6 +229,13 @@ void OpenGLWindow::checkCollisions(){
         if(i->life == 0) i->m_destroyed = true;
         j->m_hit = true;
       }
+    }
+  }
+  for(auto i = m_eBullets.begin(); i != m_eBullets.end(); ++i){
+    if(!m_player.m_invincibility && (glm::distance(m_player.m_translation, i->m_translation) < (m_player.m_scale/4) + i->m_scale*0.7f)){
+      m_player.damage();
+      i->m_hit = true;
+      std::cout << "vidas: "<<m_player.m_lives << std::endl;
     }
   }
 }

@@ -7,9 +7,14 @@
 #include <vector>
 
 #include "abcg.hpp"
+
+
 #include "player.hpp"
 #include "starlayers.hpp"
 #include "enemy.hpp"
+#include "enemybullet.hpp"
+#include "stage1.hpp"
+
 
 class OpenGLWindow : public abcg::OpenGLWindow {
  protected:
@@ -21,9 +26,12 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   void terminateGL() override;
 
   void checkCollisions();
+
+
  private:
   GLuint m_objectsProgram{};
   GLuint m_starsProgram{};
+  GLuint m_bulletsProgram{};
 
   int m_viewportWidth{};
   int m_viewportHeight{};
@@ -38,6 +46,11 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   std::default_random_engine m_randomEngine;
 
   std::vector<Enemy> m_enemies{};
+  
+  std::vector<EnemyBullet> m_eBullets{};
+  glm::vec2 playerPosition;
+
+  Stage1 stage;
 
   void restart();
   void update();

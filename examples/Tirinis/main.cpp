@@ -1,9 +1,12 @@
 #include <fmt/core.h>
 
 #include "abcg.hpp"
-#include "openglwindow.hpp"
 
+class EnemyBullet;
+
+#include "openglwindow.hpp"
 int main(int argc, char **argv) {
+  
   try {
     abcg::Application app(argc, argv);
     
@@ -13,7 +16,7 @@ int main(int argc, char **argv) {
                                .height = 600,
                                .showFPS = false,
                                .showFullscreenButton = false,
-                               .title = "Tírinis"});
+                               .title = "Tirinis"});
     app.run(window);
   } catch (abcg::Exception &exception) {
     fmt::print(stderr, "{}\n", exception.what());
