@@ -6,6 +6,8 @@ The game currently just repeats a loop with enemies in specific positions with e
 
 Try deafeating the most enemies before running out of lives!
 
+Link to play: https://maru-0.github.io/Tirinis/public/
+
 ## Controls
 - Movement: Arrow keys.
 - Shoot: Z key.
